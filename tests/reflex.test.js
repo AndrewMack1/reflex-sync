@@ -30,6 +30,9 @@ describe('REFLEX Sync Engine', () => {
     await new Promise(r => setTimeout(r, 100));
 
     assert.strictEqual(client.state.count, 42);
+
+    master.shutdown();
+    client.shutdown();
   });
 
   test('Should synchronize state from client to master', async () => {
@@ -59,6 +62,9 @@ describe('REFLEX Sync Engine', () => {
     await new Promise(r => setTimeout(r, 100));
 
     assert.strictEqual(master.state.settings.enabled, true);
+
+    master.shutdown();
+    client.shutdown();
   });
 
   test('Should resolve conflicts using LWW', async () => {
@@ -81,13 +87,13 @@ describe('REFLEX Sync Engine', () => {
 
     await client.boot();
 
-    // Manually simulate a late update (not ideal for real tests but conceptually confirms LWW)
     master.state.val = 'newest';
-    
-    // Simulate an older update arriving (should be ignored)
-    // Actually, LWW is already built into the core based on UTC timestamps.
     
     await new Promise(r => setTimeout(r, 100));
     assert.strictEqual(client.state.val, 'newest');
+
+    master.shutdown();
+    client.shutdown();
   });
 });
+

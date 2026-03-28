@@ -161,4 +161,12 @@ export class Reflex<T extends object> extends EventEmitter {
       this._socket.write(raw);
     }
   }
+
+  public shutdown(): void {
+    if (this._server) this._server.close();
+    if (this._socket) this._socket.destroy();
+    this._clients.forEach(c => c.destroy());
+    this._clients.clear();
+  }
 }
+
