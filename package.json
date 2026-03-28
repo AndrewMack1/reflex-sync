@@ -1,0 +1,38 @@
+{
+  "name": "reflex-sync",
+  "version": "1.0.1",
+  "description": "High-performance, secure, real-time reactive state synchronization across processes and servers.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean",
+    "dev": "tsup src/index.ts --format esm --watch --dts",
+    "test": "node --test tests/*.test.js"
+  },
+  "keywords": [
+    "state",
+    "sync",
+    "reactive",
+    "ipc",
+    "tls",
+    "proxy",
+    "reflex"
+  ],
+  "author": "Andrei",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "20.19.37",
+    "tsup": "^8.0.2",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "zod": "^3.22.4"
+  }
+}
