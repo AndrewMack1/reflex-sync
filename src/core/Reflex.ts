@@ -17,6 +17,7 @@ export class Reflex<T extends object> extends EventEmitter {
   private _clients: Set<net.Socket | tls.TLSSocket> = new Set();
   private readonly _auth: Authenticator;
   private _timestamps: Map<string, number> = new Map();
+  private _heartbeats: Set<NodeJS.Timeout> = new Set();
 
   constructor(private opts: ReflexOptions, initial: T = {} as T) {
     super();
@@ -89,6 +90,7 @@ export class Reflex<T extends object> extends EventEmitter {
     const heartbeat = setInterval(() => {
       if (s.writable) s.write(JSON.stringify({ t: 'PING' }));
     }, 30000);
+    this._heartbeats.add(heartbeat);
 
     s.on('data', (d: Buffer) => {
       if (d.length > (this.opts.limits?.maxPayloadSize || 1024 * 1024)) {
@@ -116,6 +118,7 @@ export class Reflex<T extends object> extends EventEmitter {
 
     s.on('close', () => {
       clearInterval(heartbeat);
+      this._heartbeats.delete(heartbeat);
       this._clients.delete(s);
     });
   }
@@ -167,6 +170,9 @@ export class Reflex<T extends object> extends EventEmitter {
     if (this._socket) this._socket.destroy();
     this._clients.forEach(c => c.destroy());
     this._clients.clear();
+    this._heartbeats.forEach(h => clearInterval(h));
+    this._heartbeats.clear();
   }
 }
+
 
